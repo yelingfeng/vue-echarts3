@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>echart3 + vuejs 双向绑定</title>
+</head>
+<body>
+
+    <app></app>
+    <script src="src/echarts.min.js"></script>
+    <script src="src/vue.min.js"></script>
+
+    <script>
+
+        var option = {
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            title : {
+                show : true,
+                text : "夜聆风是个帅笔"
+            },
+            legend: {
+                data:['百度','谷歌','必应','其他'],
+                align : "left",
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : ['周一','周二','周三','周四','周五','周六','周日']
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+
+                {
+                    name:'百度',
+                    type:'bar',
+                    barWidth : 5,
+                    stack: '搜索引擎',
+                    data:[620, 732, 701, 734, 1090, 1130, 1120]
+                },
+                {
+                    name:'谷歌',
+                    type:'bar',
+                    stack: '搜索引擎',
+                    data:[120, 132, 101, 134, 290, 230, 220]
+                },
+                {
+                    name:'必应',
+                    type:'bar',
+                    stack: '搜索引擎',
+                    data:[60, 72, 71, 74, 190, 130, 110]
+                },
+                {
+                    name:'其他',
+                    type:'bar',
+                    stack: '搜索引擎',
+                    data:[62, 82, 91, 84, 109, 110, 120]
+                }
+            ]
+        };
+
+
+        var barChart = Vue.extend({
+            template:"<div style='width:600px;height:300px;border: 1px solid #ccc;'></div>",
+            props:['option'],
+            ready:function(){
+                this.chart = echarts.init(this.$el);
+                this.chart.setOption(this.option);
+            },
+            watch: {
+                option: {
+                    deep: true,
+                    handler:function(val,oldVal){
+                          this.chart.setOption(val);
+                    }
+                }
+            }
+        });
+
+        var edit = Vue.extend({
+            template : "<div>标题:<input type='text' v-model='option.title.text' /></div>",
+            props:['option']
+        });
+
+        var app = Vue.extend({
+            template:"<div><bar-chart :option.sync='chartData'></bar-chart><edit :option.sync='chartData'></edit></div>",
+            data :function(){
+              return {
+                  chartData : option
+              }
+            },
+            components:{
+                barChart : barChart,
+                edit : edit
+            }
+        });
+
+        new Vue({
+            el:"body",
+            components:{
+                app:app
+            }
+        })
+
+
+    </script>
+</body>
+</html>
